@@ -2,6 +2,7 @@ import { User } from "../model/user.model.js";
 import validator from "validator";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../config/token.js";
+import copkie from "cookie-parser";
 
 
 const signUp = async (req , res)=>{
@@ -27,7 +28,7 @@ const signUp = async (req , res)=>{
             })
         }
 
-        if(email.length < 8){
+        if(password.length < 8){
             return res.status(400).json({
                 success: false,
                 message: "enter strong password"
@@ -46,7 +47,7 @@ const signUp = async (req , res)=>{
         })
 
         const token =  generateToken(newUser?._id);
-        req.cookie("token",token , {
+        res.cookie("token",token , {
             httpOnly: true,
             secure: false,
             sameSite: "Strict",
@@ -60,6 +61,7 @@ const signUp = async (req , res)=>{
 
         })
     } catch (error) {
+        console.log("error while signup")
         return res.status(500).json({
             success: false,
             message: `signup error : ${error}`
@@ -88,7 +90,7 @@ const login = async (req , res)=>{
         }
 
         
-        const isPasswordCorrect = await bcrypt.compare(password , user.password);
+        const isPasswordCorrect =  bcrypt.compare(password , user.password);
 
         if(!isPasswordCorrect){
             return res.status(400).json({
