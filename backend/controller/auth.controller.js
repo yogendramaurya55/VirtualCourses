@@ -90,7 +90,7 @@ const login = async (req , res)=>{
         }
 
         
-        const isPasswordCorrect =  bcrypt.compare(password , user.password);
+        const isPasswordCorrect = await bcrypt.compare(password , user.password);
 
         if(!isPasswordCorrect){
             return res.status(400).json({
@@ -99,12 +99,46 @@ const login = async (req , res)=>{
             })
         }
 
+        const token = generateToken(user._id);
+        res.cookie("token" ,token , {
+            httpOnly:true,
+            secure:false,
+            sameSite:"Strict",
+            maxAge: 7 * 24 * 60 * 60 *1000 
+        })
+
+        return res.status(200).json({
+            success:true,
+            message: "Logged in successfully",
+            user
+        })
+
     } catch (error) {
-        
+        return res.status(500).json({
+            success: false,
+            message:`Login Error ${error}`
+        })
+    }
+}
+
+
+const logOut = async (req , res) => {
+    try {
+        await res.clearCookie("token")
+
+        return res.status(200).json({
+            message: "LogOut successfully"
+        })
+    } catch (error) {
+        return res.status(400).json({
+            message: `Logout error ${error}`
+        })
     }
 }
 
 export
 {
-    signUp
+    signUp,
+    login,
+    logOut
 }
