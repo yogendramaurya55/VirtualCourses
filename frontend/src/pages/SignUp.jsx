@@ -7,6 +7,8 @@ import axios from "axios";
 import { serverUrl } from '../App';
 import { toast } from 'react-toastify';
 import {ClipLoader} from 'react-spinners';
+import { useDispatch } from 'react-redux';
+import { setUserData } from '../redux/userSlice';
 
 
 
@@ -22,6 +24,9 @@ const SignUp = () => {
 
   const [loading , setLoading] = useState(false);
 
+  const dispatch = useDispatch()
+
+
   const handleSignUp = async () => {
     setLoading(true)
     try {
@@ -34,14 +39,18 @@ const SignUp = () => {
       {withCredentials:true}
      )
      
+     dispatch(setUserData(result.data))
      console.log(result.data)
-     setLoading(false)
      navigate('/')
      toast.success("Signup sucessfully")
      
     } catch (error) {
       console.log(error)
       toast.error(error.response.data.message)
+      dispatch(setUserData(null))
+    }
+    finally{
+      setLoading(false)
     }
   }
 

@@ -7,6 +7,8 @@ import { ClipLoader } from 'react-spinners';
 import axios from 'axios';
 import { serverUrl } from '../App';
 import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import { setUserData } from '../redux/userSlice';
 
 const Login = () => {
   
@@ -16,6 +18,8 @@ const Login = () => {
 
   const [email , setEmail] = useState("")
   const [password , setPassword] = useState("")
+
+  const dispatch = useDispatch()
 
   const handleLogin = async ()=>{
     setLoading(true)
@@ -30,13 +34,18 @@ const Login = () => {
         }
       )
 
-      setLoading(false)
+      dispatch(setUserData(result.data))
       console.log(result.data)
       navigate('/')
       toast.success("login successfully")
     } catch (error) {
+      
       console.log(error);
       toast.error(error.response.data.message)
+      dispatch(setUserData(null))
+    }
+    finally{
+      setLoading(false)
     }
   }
   

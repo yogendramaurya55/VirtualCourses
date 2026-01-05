@@ -2,8 +2,9 @@ import express from "express"
 import 'dotenv/config'
 import cookieParser from "cookie-parser";
 import { connectDB } from "./config/connectDB.js";
-import { userRouter } from "./route/user.route.js";
 import cors from "cors"
+import { authRouter } from "./route/auth.route.js";
+import { userRouter } from "./route/user.route.js";
 
 const app = express();
 
@@ -24,7 +25,8 @@ app.get("/status", (req , res)=>{
 
 })
 
-app.use("/api/auth" , userRouter);
+app.use("/api/auth" , authRouter);
+app.use("/api/user" , userRouter);
 
 await connectDB();
 
